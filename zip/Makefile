@@ -1,6 +1,6 @@
 # source /home/libiao/alchemy-ubuntu-v0.5a/alchemy-setup && alc-on
-ALCHEMY_HOME:=/home/libiao/alchemy-ubuntu-v0.5a
-FLEX_HOME:=/home/libiao/flex_sdk_4.5
+ALCHEMY_HOME:=$(HOME)/alchemy-ubuntu-v0.5a
+FLEX_HOME:=$(HOME)/flex_sdk_4.5
 FLASHPLAYER:=$(FLEX_HOME)/bin/flashplayerdebugger
 MXMLC:=$(FLEX_HOME)/bin/mxmlc
 SWF:=test.swf
