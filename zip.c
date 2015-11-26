@@ -247,22 +247,6 @@ ZipDataDesc * ZipDataDesc_read(ByteArray * bytearray)
 	return zipdatadesc;
 }
 
-typedef struct ZipHeader{
-	unsigned int sig;//must be 0x04034b50
-	unsigned short verNeed;
-	unsigned short flag;
-	unsigned short method;
-	unsigned short modifytime;
-	unsigned short modifydate;
-	unsigned int crc32;
-	unsigned int size;
-	unsigned int unCompressedSize;
-	unsigned short filenameLen;
-	unsigned short extraFieldLen;
-	char * fileName;
-	char * extraField;
-	char * data;
-}ZipHeader;
 void ZipHeader_free(ZipHeader * header)
 {
 	if(header)
@@ -366,10 +350,6 @@ ZipHeader * ZipHeader_read(ByteArray * bytearray,char * out)
 	return header;
 }
 
-typedef struct ZipFile{
-	ZipHeader * header;
-	ByteArray * bytearray;
-}ZipFile;
 void ZipFile_free(ZipFile * file)
 {
 	if(file)
