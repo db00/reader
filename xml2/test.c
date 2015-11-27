@@ -1,7 +1,7 @@
 /*
  *
- gcc -D_REENTRANT test.c -I"include" -I. SAX.c entities.c encoding.c error.c  parserInternals.c parser.c tree.c hash.c list.c xmlIO.c  xmlmemory.c uri.c valid.c xlink.c HTMLparser.c HTMLtree.c  debugXML.c xpath.c xpointer.c xinclude.c nanohttp.c nanoftp.c  DOCBparser.c catalog.c globals.c threads.c c14n.c xmlstring.c  xmlregexp.c xmlschemas.c xmlschemastypes.c xmlunicode.c  xmlreader.c relaxng.c dict.c SAX2.c legacy.c chvalid.c pattern.c xmlsave.c xmlmodule.c schematron.c  -lpthread -lm -lz -ldl && ./a.out regressions.xml
- gcc -DHAVE_CONFIG_H -D_REENTRANT test.c -I"include" -I. SAX.c entities.c encoding.c error.c  parserInternals.c parser.c tree.c hash.c list.c xmlIO.c  xmlmemory.c uri.c valid.c xlink.c HTMLparser.c HTMLtree.c  debugXML.c xpath.c xpointer.c xinclude.c nanohttp.c nanoftp.c  DOCBparser.c catalog.c globals.c threads.c c14n.c xmlstring.c  xmlregexp.c xmlschemas.c xmlschemastypes.c xmlunicode.c  xmlreader.c relaxng.c dict.c SAX2.c xmlwriter.c legacy.c chvalid.c pattern.c xmlsave.c xmlmodule.c schematron.c triostr.c trio.c trionan.c -lpthread -lm -lz -ldl && ./a.out regressions.xml
+ gcc -D_REENTRANT test.c -I"." -I. SAX.c entities.c encoding.c error.c  parserInternals.c parser.c tree.c hash.c list.c xmlIO.c  xmlmemory.c uri.c valid.c xlink.c HTMLparser.c HTMLtree.c  debugXML.c xpath.c xpointer.c xinclude.c nanohttp.c nanoftp.c  DOCBparser.c catalog.c globals.c threads.c c14n.c xmlstring.c  xmlregexp.c xmlschemas.c xmlschemastypes.c xmlunicode.c  xmlreader.c relaxng.c dict.c SAX2.c legacy.c chvalid.c pattern.c xmlsave.c xmlmodule.c schematron.c  -lpthread -lm -lz -ldl && ./a.out regressions.xml
+ gcc -DHAVE_CONFIG_H -D_REENTRANT test.c -I"." -I. SAX.c entities.c encoding.c error.c  parserInternals.c parser.c tree.c hash.c list.c xmlIO.c  xmlmemory.c uri.c valid.c xlink.c HTMLparser.c HTMLtree.c  debugXML.c xpath.c xpointer.c xinclude.c nanohttp.c nanoftp.c  DOCBparser.c catalog.c globals.c threads.c c14n.c xmlstring.c  xmlregexp.c xmlschemas.c xmlschemastypes.c xmlunicode.c  xmlreader.c relaxng.c dict.c SAX2.c xmlwriter.c legacy.c chvalid.c pattern.c xmlsave.c xmlmodule.c schematron.c triostr.c trio.c trionan.c -lpthread -lm -lz -ldl && ./a.out regressions.xml
  */
 #include <stdio.h>
 #include <string.h>
@@ -61,7 +61,9 @@ int main()
 		;
 	xmlNodePtr cur;  //定义结点指针(你需要它为了在各个结点间移动)
 	xmlChar *key;
-	xmlDocPtr doc = xmlReadMemory(xmls, strlen(xmls), NULL, NULL, 0);
+	//xmlDocPtr doc = xmlReadMemory(xmls, strlen(xmls), NULL, NULL, 0);
+	xmlDocPtr doc = xmlParseMemory(xmls, strlen(xmls));
+	//for(i=0;i<MAXNS;i++) xmlXPathRegisterNs(context,NSNAME[i],NS[i]);//  //默认ns :   @"//*[local-name()='price'] " 
 	/*检查解析文档是否成功，如果不成功，libxml将指一个注册的错误并停止。一个常见错误是不适当的编码。XML标准文档除了用UTF-8或UTF-16外还可用其它编码保存。如果文档是这样，libxml将自动地为你转换到UTF-8。更多关于XML编码信息包含在XML标准中。*/
 	if (doc == NULL )
 	{
