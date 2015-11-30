@@ -121,6 +121,7 @@ int main(int argc,char **argv)
 				}
 				cur = cur->next;
 			}
+			printf("\r\n");
 		}
 		xmlXPathFreeObject (_result);
 	}
@@ -149,7 +150,7 @@ int main(int argc,char **argv)
 		return -1;
 	}
 
-	xmlChar *xpath = ("//ns:c");
+	xmlChar *xpath = ("//ns:row");
 	xmlXPathObjectPtr app_result = get_nodeset(doc,xpath);
 	if (app_result == NULL)
 	{
@@ -164,34 +165,76 @@ int main(int argc,char **argv)
 		{
 			xmlNodePtr cur;  //定义结点指针(你需要它为了在各个结点间移动)
 			cur = nodeset->nodeTab[i];   
-			xmlChar* prop = xmlGetProp(cur, "t");  
-			//if(prop) printf("prop:%s",prop);
-
-
 			//printf("name: %s\n", (char *)cur->name);
 			cur = cur->xmlChildrenNode; 
-			while(cur!=NULL)
+			while(cur)
 			{  
 				xmlChar *value;
+				xmlNodePtr son = cur;//->xmlChildrenNode; 
 
-				value = xmlNodeGetContent(cur);
+				xmlChar* prop = xmlGetProp(son, "t");  
+				//if(prop) printf("prop:%s",prop);
+				value = xmlNodeGetContent(son);
 				if (value != NULL)
 				{
 					if(prop && strcmp("s",prop)==0)
 					{
 						//printf("====%s\t", (char *)value);
 						printf("%s\t", (char *)str_arr[atoi((char*)value)]);
+					//}else if(atoi(prop)==5){
 					}else{
 						printf("%s\t", (char *)value);
 					}
 					xmlFree(value);
 				}
 				cur = cur->next;
+				xmlFree(prop); 
 			}
-			xmlFree(prop); 
+			printf("\r\n");
 		}
+		printf("\r\n");
 		xmlXPathFreeObject (app_result);
 	}
+
+
+	xmlNodePtr cur;  //定义结点指针(你需要它为了在各个结点间移动)
+	xmlChar *key;
+	cur = xmlDocGetRootElement(doc);  //确定文档根元素
+	/*检查确认当前文档中包含内容*/
+	if (cur == NULL)
+	{
+		fprintf(stderr,"empty document\n");
+		xmlFreeDoc(doc);
+		return -2;
+	}
+	if (xmlStrcmp(cur->name, (const xmlChar *) "worksheet"))
+	{
+		xmlFreeDoc(doc);
+		return -3;
+	}
+	cur = cur->xmlChildrenNode;
+	while(cur!=NULL)
+	{
+		xmlNodePtr son = cur->children;
+		while(son){
+			xmlChar* prop = xmlGetProp(son, "spans");  
+			//printf("\n%s,%s",son->name,prop);
+
+			/*
+			   if ((!xmlStrcmp(son->name, (const xmlChar *)"sheetData")))
+			   {
+			   key = xmlNodeListGetString(doc, son->xmlChildrenNode, 1);
+			   printf("keyword: %s\n", key);
+			   xmlFree(key);
+			   }
+			   */
+			son = son->next;
+		}
+		cur = cur->next;
+	}
+
+
+
 
 	xmlFreeDoc(doc); 
 

@@ -93,7 +93,7 @@ int main(int argc,char **argv)
 		return -1;
 	}
 
-	xmlChar *xpath = ("//w:t");
+	xmlChar *xpath = ("//w:p");
 	xmlXPathObjectPtr app_result = get_nodeset(doc,xpath);
 	if (app_result == NULL)
 	{
@@ -116,12 +116,14 @@ int main(int argc,char **argv)
 				value = xmlNodeGetContent(cur);
 				if (value != NULL)
 				{
-					printf("%s\n", (char *)value);
+					printf("%s", (char *)value);
 					xmlFree(value);
 				}
 				cur = cur->next;
 			}
+			printf("\r\n");
 		}
+		printf("\r\n");
 		xmlXPathFreeObject (app_result);
 	}
 
