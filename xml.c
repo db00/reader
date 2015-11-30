@@ -1,7 +1,7 @@
 /*
  *
- gcc -D_REENTRANT test.c -I"." -I. SAX.c entities.c encoding.c error.c  parserInternals.c parser.c tree.c hash.c list.c xmlIO.c  xmlmemory.c uri.c valid.c xlink.c HTMLparser.c HTMLtree.c  debugXML.c xpath.c xpointer.c xinclude.c nanohttp.c nanoftp.c  DOCBparser.c catalog.c globals.c threads.c c14n.c xmlstring.c  xmlregexp.c xmlschemas.c xmlschemastypes.c xmlunicode.c  xmlreader.c relaxng.c dict.c SAX2.c legacy.c chvalid.c pattern.c xmlsave.c xmlmodule.c schematron.c  -lpthread -lm -lz -ldl -licuuc && ./a.out regressions.xml
- gcc -DHAVE_CONFIG_H -D_REENTRANT test.c -I"." -I. SAX.c entities.c encoding.c error.c  parserInternals.c parser.c tree.c hash.c list.c xmlIO.c  xmlmemory.c uri.c valid.c xlink.c HTMLparser.c HTMLtree.c  debugXML.c xpath.c xpointer.c xinclude.c nanohttp.c nanoftp.c  DOCBparser.c catalog.c globals.c threads.c c14n.c xmlstring.c  xmlregexp.c xmlschemas.c xmlschemastypes.c xmlunicode.c  xmlreader.c relaxng.c dict.c SAX2.c xmlwriter.c legacy.c chvalid.c pattern.c xmlsave.c xmlmodule.c schematron.c triostr.c trio.c trionan.c -lpthread -lm -lz -ldl && ./a.out regressions.xml
+ VPATH=xml2 && gcc -D_REENTRANT xml.c -I"xml2" -lxml2 -lpthread -lm -lz -ldl -licuuc && ./a.out regressions.xml
+ gcc -DHAVE_CONFIG_H -D_REENTRANT xml.c -I"." -I. SAX.c entities.c encoding.c error.c  parserInternals.c parser.c tree.c hash.c list.c xmlIO.c  xmlmemory.c uri.c valid.c xlink.c HTMLparser.c HTMLtree.c  debugXML.c xpath.c xpointer.c xinclude.c nanohttp.c nanoftp.c  DOCBparser.c catalog.c globals.c threads.c c14n.c xmlstring.c  xmlregexp.c xmlschemas.c xmlschemastypes.c xmlunicode.c  xmlreader.c relaxng.c dict.c SAX2.c xmlwriter.c legacy.c chvalid.c pattern.c xmlsave.c xmlmodule.c schematron.c triostr.c trio.c trionan.c -lpthread -lm -lz -ldl && ./a.out regressions.xml
  */
 #include <stdio.h>
 #include <string.h>
@@ -10,7 +10,6 @@
 #include <libxml/tree.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
-#include "unicode/ucnv.h"
 
 xmlXPathObjectPtr get_nodeset(xmlDocPtr doc, const xmlChar *xpath)
 {
@@ -152,35 +151,7 @@ int main()
 		xmlXPathFreeObject (app_result);
 	}
 
-
-
-
-
-
-
 	xmlFreeDoc(doc); 
 
-
-
-
-	// 下面是 ICU4C 4.2 的测试代码  
-	const char *toConverterName= "utf8";  
-	const char *fromConverterName = "gb2312";  
-	char target [100];  
-	int32_t targetCapacity = 100;  
-	const char *source="呵呵";  
-	int32_t sourceLength = -1;  
-	UErrorCode ErrorCode = U_ZERO_ERROR; // 文档中说该值必须初始化为U_ZERO_ERROR，其实如果不初始化该值而且转换中没有出错时该值是不会被填写的，即未初始化前的值  
-	int ret = ucnv_convert(toConverterName, // utf8 或 utf-8 效果是一样的  
-			fromConverterName, // gbk 与 gb2312 好像区别不大，用 gbk 可能会好些  
-			target,     
-			targetCapacity, // 详见下面  
-			source,  
-			sourceLength, // 长度为 -1 表明 NULL 终止的字符串  
-			&ErrorCode);  // 该值不能为空，否则函数返回值为 0 并不做任何转换  
-	// 返回值 ret 为整个源字符串 source 转换后的长度(即使 targetCapacity 空间不足也是如此)   
-	printf("%s\n",source);
-	printf("%s",target);
-	
 	return 0;
 }
