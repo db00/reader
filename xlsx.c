@@ -1,6 +1,6 @@
 /**
  * @file xlsx.c
- gcc -I"xml2" -lxml2  mystring.c -lm -D test_xlsx -D STDC_HEADERS xlsx.c zip.c bytearray.c inflate.c crc32.c uncompr.c adler32.c inffast.c inftrees.c zutil.c && ./a.out
+ gcc -Wall -I"xml2" -lxml2  mystring.c -lm -D test_xlsx -D STDC_HEADERS xlsx.c zip.c bytearray.c inflate.c crc32.c uncompr.c adler32.c inffast.c inftrees.c zutil.c && ./a.out
  gcc -I"xml2" -lxml2  myregex.c mystring.c regex.c -lm -D test_xlsx -D STDC_HEADERS xlsx.c zip.c bytearray.c inflate.c crc32.c uncompr.c adler32.c inffast.c inftrees.c zutil.c && ./a.out
  * @author db0@qq.com
  * @version 1.0.1
@@ -24,7 +24,7 @@ xmlXPathObjectPtr get_nodeset(xmlDocPtr doc, const xmlChar *xpath)
 		printf("context is NULL\n");
 		return NULL;
 	}
-	xmlXPathRegisterNs(context,"ns","http://schemas.openxmlformats.org/spreadsheetml/2006/main");//  //默认ns :   @"//*[local-name()='price'] " 
+	xmlXPathRegisterNs(context,(const xmlChar*)"ns",(const xmlChar*)"http://schemas.openxmlformats.org/spreadsheetml/2006/main");//  //默认ns :   @"//*[local-name()='price'] " 
 	result = xmlXPathEvalExpression(xpath, context);
 	xmlXPathFreeContext(context);
 	if (result == NULL)
@@ -44,7 +44,6 @@ xmlXPathObjectPtr get_nodeset(xmlDocPtr doc, const xmlChar *xpath)
 #ifdef test_xlsx
 int main(int argc,char **argv)
 {
-	int i,len;
 	char * filename;
 	if(argc>1)
 	{
@@ -69,7 +68,7 @@ int main(int argc,char **argv)
 	//ZipFile_free(ZipFile_parser(bytearray,"",out,&outlen));
 
 	ZipFile * zipfile = ZipFile_parser(bytearray,"xl/sharedStrings.xml",out,&outlen);
-	printf("\n%s",out);
+	//printf("\n%s",out);
 	ZipFile_free(zipfile);
 
 	/*
@@ -89,15 +88,16 @@ int main(int argc,char **argv)
 		return -1;
 	}
 
-	xmlChar *xpath1 = ("//ns:t");
+	xmlChar *xpath1 = (xmlChar*)("//ns:t");
 	xmlXPathObjectPtr _result = get_nodeset(string_doc,xpath1);
 	if (_result == NULL)
 	{
 		printf("_result is NULL\n");
 		return -4;
 	}
+	int i;
 	i = 0;
-	char** str_arr=NULL;
+	xmlChar ** str_arr=NULL;
 	if(_result)
 	{
 		xmlNodeSetPtr nodeset = _result->nodesetval;
@@ -116,12 +116,12 @@ int main(int argc,char **argv)
 				str_arr[i]=value;
 				if (value != NULL)
 				{
-					printf("%s\t", (char *)value);
+					//printf("%s\t", (char *)value);
 					//xmlFree(value);
 				}
 				cur = cur->next;
 			}
-			printf("\r\n");
+			//printf("\r\n");
 		}
 		xmlXPathFreeObject (_result);
 	}
@@ -133,117 +133,113 @@ int main(int argc,char **argv)
 
 
 
-	memset(out,0,fileLen*10);
-	// xl/worksheets/sheet1.xml
-	char sheetName[64];
-	memset(sheetName,0,64);
-	i=1;
-	sprintf(sheetName,"xl/worksheets/sheet%d.xml",i);
-	bytearray->position=0;
-	ZipFile_free(ZipFile_parser(bytearray,sheetName,out,&outlen));
-	printf("\n%s\n",out);
+	int sheetIndex = 0;
+	while(1){
+		sheetIndex++;
+		memset(out,0,fileLen*10);
+		// xl/worksheets/sheet1.xml
+		char sheetName[64];
+		memset(sheetName,0,64);
+		sprintf(sheetName,"xl/worksheets/sheet%d.xml",sheetIndex);
+		bytearray->position=0;
+		ZipFile_free(ZipFile_parser(bytearray,sheetName,out,&outlen));
+		//printf("\n%s\n",out);
+		if(out==NULL || strlen(out)==0)
+			break;
 
-	xmlDocPtr doc = xmlParseMemory(out, strlen(out));
-	if (doc == NULL )
-	{
-		fprintf(stderr,"Document not parsed successfully. \n");
-		return -1;
-	}
-
-	xmlChar *xpath = ("//ns:row");
-	xmlXPathObjectPtr app_result = get_nodeset(doc,xpath);
-	if (app_result == NULL)
-	{
-		printf("app_result is NULL\n");
-		return -4;
-	}
-	i = 0;
-	if(app_result)
-	{
-		xmlNodeSetPtr nodeset = app_result->nodesetval;
-		for (i=0; i < nodeset->nodeNr; i++)
+		xmlDocPtr doc = xmlParseMemory(out, strlen(out));
+		if (doc == NULL )
 		{
-			xmlNodePtr cur;  //定义结点指针(你需要它为了在各个结点间移动)
-			cur = nodeset->nodeTab[i];   
-			//printf("name: %s\n", (char *)cur->name);
-			cur = cur->xmlChildrenNode; 
-			while(cur)
-			{  
-				xmlChar *value;
-				xmlNodePtr son = cur;//->xmlChildrenNode; 
+			fprintf(stderr,"Document not parsed successfully. \n");
+			return -1;
+		}
 
-				xmlChar* prop = xmlGetProp(son, "t");  
-				//if(prop) printf("prop:%s",prop);
-				value = xmlNodeGetContent(son);
-				if (value != NULL)
-				{
-					if(prop && strcmp("s",prop)==0)
+		xmlChar *xpath = (xmlChar*)("//ns:row");
+		xmlXPathObjectPtr app_result = get_nodeset(doc,xpath);
+		if (app_result == NULL)
+		{
+			printf("app_result is NULL\n");
+			return -4;
+		}
+		if(app_result)
+		{
+			xmlNodeSetPtr nodeset = app_result->nodesetval;
+			xmlNodePtr cur = nodeset->nodeTab[0];   
+			while(cur)
+			{
+				//printf("name: %s\n", (char *)cur->name);
+				xmlNodePtr son = cur->xmlChildrenNode;
+				while(son)
+				{  
+					xmlChar *value;
+					xmlChar* prop = xmlGetProp(son, (const xmlChar*)"t");  
+					//if(prop) printf("prop:%s",prop);
+					value = xmlNodeGetContent(son);
+					if (value != NULL)
 					{
-						//printf("====%s\t", (char *)value);
-						printf("%s\t", (char *)str_arr[atoi((char*)value)]);
-					//}else if(atoi(prop)==5){
-					}else{
-						printf("%s\t", (char *)value);
+						if(prop && strcmp("s",(char*)prop)==0)
+						{
+							//printf("====%s\t", (char *)value);
+							printf("%s\t", (char *)str_arr[atoi((char*)value)]);
+						}else{
+							printf("%s\t", (char *)value);
+						}
+						xmlFree(value);
 					}
-					xmlFree(value);
+					son = son->next;
+					xmlFree(prop); 
 				}
+				printf("\r\n");
 				cur = cur->next;
-				xmlFree(prop); 
 			}
 			printf("\r\n");
+			xmlXPathFreeObject (app_result);
 		}
-		printf("\r\n");
-		xmlXPathFreeObject (app_result);
+		xmlFreeDoc(doc); 
 	}
 
 
-	xmlNodePtr cur;  //定义结点指针(你需要它为了在各个结点间移动)
-	xmlChar *key;
-	cur = xmlDocGetRootElement(doc);  //确定文档根元素
-	/*检查确认当前文档中包含内容*/
-	if (cur == NULL)
-	{
-		fprintf(stderr,"empty document\n");
-		xmlFreeDoc(doc);
-		return -2;
-	}
-	if (xmlStrcmp(cur->name, (const xmlChar *) "worksheet"))
-	{
-		xmlFreeDoc(doc);
-		return -3;
-	}
-	cur = cur->xmlChildrenNode;
-	while(cur!=NULL)
-	{
-		xmlNodePtr son = cur->children;
-		while(son){
-			xmlChar* prop = xmlGetProp(son, "spans");  
-			//printf("\n%s,%s",son->name,prop);
 
-			/*
-			   if ((!xmlStrcmp(son->name, (const xmlChar *)"sheetData")))
-			   {
-			   key = xmlNodeListGetString(doc, son->xmlChildrenNode, 1);
-			   printf("keyword: %s\n", key);
-			   xmlFree(key);
-			   }
-			   */
-			son = son->next;
+	/*
+	   xmlNodePtr cur;  //定义结点指针(你需要它为了在各个结点间移动)
+	   cur = xmlDocGetRootElement(doc);  //确定文档根元素
+	   if (cur == NULL)
+	   {
+	   fprintf(stderr,"empty document\n");
+	   xmlFreeDoc(doc);
+	   return -2;
+	   }
+	   if (xmlStrcmp(cur->name, (const xmlChar *) "worksheet"))
+	   {
+	   xmlFreeDoc(doc);
+	   return -3;
+	   }
+	   cur = cur->xmlChildrenNode;
+	   while(cur!=NULL)
+	   {
+	   xmlNodePtr son = cur->children;
+	   while(son){
+		//xmlChar* prop = xmlGetProp(son, "spans");  
+		//printf("\n%s,%s",son->name,prop);
+
+		xmlChar *key;
+		if ((!xmlStrcmp(son->name, (const xmlChar *)"sheetData")))
+		{
+		key = xmlNodeListGetString(doc, son->xmlChildrenNode, 1);
+		printf("keyword: %s\n", key);
+		xmlFree(key);
+		}
+		son = son->next;
 		}
 		cur = cur->next;
-	}
+		}
+		*/
 
 
 
 
-	xmlFreeDoc(doc); 
 
-	return 0;
-
-
-	//regex_matchedarrClear(matched_arr,len);
-
-	ZipFile_free(zipfile);
-	return 0;
+		return 0;
+		//regex_matchedarrClear(matched_arr,len);
 }
 #endif

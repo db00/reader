@@ -1,5 +1,6 @@
 /**
  * @file docx.c
+ gcc -lxml2 -I"xml2" -Wall  mystring.c -lm -D test_docx -D STDC_HEADERS docx.c zip.c bytearray.c inflate.c crc32.c uncompr.c adler32.c inffast.c inftrees.c zutil.c && ./a.out
  gcc -lxml2 -I"xml2" -Wall myregex.c mystring.c regex.c -lm -D test_docx -D STDC_HEADERS docx.c zip.c bytearray.c inflate.c crc32.c uncompr.c adler32.c inffast.c inftrees.c zutil.c && ./a.out
  * @author db0@qq.com
  * @version 1.0.1
@@ -24,7 +25,7 @@ xmlXPathObjectPtr get_nodeset(xmlDocPtr doc, const xmlChar *xpath)
 		printf("context is NULL\n");
 		return NULL;
 	}
-	xmlXPathRegisterNs(context,"w","http://schemas.openxmlformats.org/wordprocessingml/2006/main");//  //Ä¬ÈÏns :   @"//*[local-name()='price'] " 
+	xmlXPathRegisterNs(context,(const xmlChar*)"w",(const xmlChar*)"http://schemas.openxmlformats.org/wordprocessingml/2006/main");//  //é»˜è®¤ns :   @"//*[local-name()='price'] " 
 	result = xmlXPathEvalExpression(xpath, context);
 	xmlXPathFreeContext(context);
 	if (result == NULL)
@@ -71,10 +72,10 @@ int main(int argc,char **argv)
 	//printf("\n%s",out);
 
 	/*
-	//<w:p ·Ö¶Î
+	//<w:p åˆ†æ®µ
 	char **matched_arr=(char**)malloc(strlen(out));
 	memset(matched_arr,0,strlen(out));
-	//<w:t>ÎÄ±¾</w:t>
+	//<w:t>æ–‡æœ¬</w:t>
 	int len = regex_search_all(out,"/<w:t>([^<>]*)<\\/w:t>/",matched_arr);
 	printf("%d\n",len);
 	char * connected = string_concat(matched_arr,len,"");
@@ -85,15 +86,15 @@ int main(int argc,char **argv)
 
 
 	xmlDocPtr doc = xmlParseMemory(out, strlen(out));
-	//for(i=0;i<MAXNS;i++) xmlXPathRegisterNs(context,NSNAME[i],NS[i]);//  //Ä¬ÈÏns :   @"//*[local-name()='price'] " 
-	/*¼ì²é½âÎöÎÄµµÊÇ·ñ³É¹¦£¬Èç¹û²»³É¹¦£¬libxml½«Ö¸Ò»¸ö×¢²áµÄ´íÎó²¢Í£Ö¹¡£Ò»¸ö³£¼û´íÎóÊÇ²»ÊÊµ±µÄ±àÂë¡£XML±ê×¼ÎÄµµ³ýÁËÓÃUTF-8»òUTF-16Íâ»¹¿ÉÓÃÆäËü±àÂë±£´æ¡£Èç¹ûÎÄµµÊÇÕâÑù£¬libxml½«×Ô¶¯µØÎªÄã×ª»»µ½UTF-8¡£¸ü¶à¹ØÓÚXML±àÂëÐÅÏ¢°üº¬ÔÚXML±ê×¼ÖÐ¡£*/
+	//for(i=0;i<MAXNS;i++) xmlXPathRegisterNs(context,NSNAME[i],NS[i]);//  //é»˜è®¤ns :   @"//*[local-name()='price'] " 
+	/*æ£€æŸ¥è§£æžæ–‡æ¡£æ˜¯å¦æˆåŠŸï¼Œå¦‚æžœä¸æˆåŠŸï¼Œlibxmlå°†æŒ‡ä¸€ä¸ªæ³¨å†Œçš„é”™è¯¯å¹¶åœæ­¢ã€‚ä¸€ä¸ªå¸¸è§é”™è¯¯æ˜¯ä¸é€‚å½“çš„ç¼–ç ã€‚XMLæ ‡å‡†æ–‡æ¡£é™¤äº†ç”¨UTF-8æˆ–UTF-16å¤–è¿˜å¯ç”¨å…¶å®ƒç¼–ç ä¿å­˜ã€‚å¦‚æžœæ–‡æ¡£æ˜¯è¿™æ ·ï¼Œlibxmlå°†è‡ªåŠ¨åœ°ä¸ºä½ è½¬æ¢åˆ°UTF-8ã€‚æ›´å¤šå…³äºŽXMLç¼–ç ä¿¡æ¯åŒ…å«åœ¨XMLæ ‡å‡†ä¸­ã€‚*/
 	if (doc == NULL )
 	{
 		fprintf(stderr,"Document not parsed successfully. \n");
 		return -1;
 	}
 
-	xmlChar *xpath = ("//w:p");
+	xmlChar *xpath = (xmlChar*)"//w:p";
 	xmlXPathObjectPtr app_result = get_nodeset(doc,xpath);
 	if (app_result == NULL)
 	{
@@ -107,7 +108,7 @@ int main(int argc,char **argv)
 		xmlNodeSetPtr nodeset = app_result->nodesetval;
 		for (i=0; i < nodeset->nodeNr; i++)
 		{
-			xmlNodePtr cur;  //¶¨Òå½áµãÖ¸Õë(ÄãÐèÒªËüÎªÁËÔÚ¸÷¸ö½áµã¼äÒÆ¶¯)
+			xmlNodePtr cur;  //å®šä¹‰ç»“ç‚¹æŒ‡é’ˆ(ä½ éœ€è¦å®ƒä¸ºäº†åœ¨å„ä¸ªç»“ç‚¹é—´ç§»åŠ¨)
 			cur = nodeset->nodeTab[i];   
 			//printf("name: %s\n", (char *)cur->name);
 			cur = cur->xmlChildrenNode; 
@@ -123,7 +124,7 @@ int main(int argc,char **argv)
 			}
 			printf("\r\n");
 		}
-		printf("\r\n");
+		//printf("\r\n");
 		xmlXPathFreeObject (app_result);
 	}
 
