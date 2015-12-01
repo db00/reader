@@ -108,13 +108,15 @@ int main(int argc,char **argv)
 		for (i=0; i < nodeset->nodeNr; i++)
 		{
 			xmlNodePtr cur = nodeset->nodeTab[i];   
-			printf("%s", (char *)xmlNodeGetContent(cur));
+			xmlChar *value = xmlNodeGetContent(cur);
+			printf("%s", (char *)value);
+			xmlFree(value);
 			//printf("name: %s\n", (char *)cur->name);
 			/*
 			   xmlNodePtr son = cur->xmlChildrenNode; 
 			   while(son)
 			   {  
-			   xmlChar *value = xmlNodeGetContent(son);
+			   value = xmlNodeGetContent(son);
 			   if (value != NULL)
 			   {
 			   printf("%s", (char *)value);
