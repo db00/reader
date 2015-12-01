@@ -102,26 +102,27 @@ int main(int argc,char **argv)
 		return -4;
 	}
 	int i = 0;
-	xmlChar *value;
 	if(app_result)
 	{
 		xmlNodeSetPtr nodeset = app_result->nodesetval;
 		for (i=0; i < nodeset->nodeNr; i++)
 		{
-			xmlNodePtr cur;  //定义结点指针(你需要它为了在各个结点间移动)
-			cur = nodeset->nodeTab[i];   
+			xmlNodePtr cur = nodeset->nodeTab[i];   
+			printf("%s", (char *)xmlNodeGetContent(cur));
 			//printf("name: %s\n", (char *)cur->name);
-			cur = cur->xmlChildrenNode; 
-			while(cur!=NULL)
-			{  
-				value = xmlNodeGetContent(cur);
-				if (value != NULL)
-				{
-					printf("%s", (char *)value);
-					xmlFree(value);
-				}
-				cur = cur->next;
-			}
+			/*
+			   xmlNodePtr son = cur->xmlChildrenNode; 
+			   while(son)
+			   {  
+			   xmlChar *value = xmlNodeGetContent(son);
+			   if (value != NULL)
+			   {
+			   printf("%s", (char *)value);
+			   xmlFree(value);
+			   }
+			   son = son->next;
+			   }
+			   */
 			printf("\r\n");
 		}
 		//printf("\r\n");

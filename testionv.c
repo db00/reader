@@ -1,6 +1,7 @@
 /**
  * @file testionv.c
  gcc -Wall testionv.c && ./a.out
+ This file code page is gbk ,
  *  
  * @author db0@qq.com
  * @version 1.0.1
