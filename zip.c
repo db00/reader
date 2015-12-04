@@ -438,8 +438,8 @@ int main(int argc,char ** argv)
 	char * out = malloc(fileLen*10);
 	memset(out,0,fileLen*10);
 	int outlen=0;
-	//ZipFile_free(ZipFile_parser(bytearray,"",out,&outlen));
-	ZipFile_free(ZipFile_parser(bytearray,".vimrc",out,&outlen));
+	ZipFile_free(ZipFile_parser(bytearray,"",out,&outlen));
+	//ZipFile_free(ZipFile_parser(bytearray,".vimrc",out,&outlen));
 	printf("\n%s",out);
 
 	//memset(out,0,fileLen*10);
