@@ -1,3 +1,10 @@
+/**
+ * @file bytearray.c
+ gcc doc.c ole.c bytearray.c -D test_doc -lm && ./a.out
+ * @author db0@qq.com
+ * @version 1.0.1
+ * @date 2016-01-06
+ */
 #include "bytearray.h"
 
 #ifdef LITTLE_ENDIAN

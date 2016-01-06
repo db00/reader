@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <iconv.h>
 
 #define FREE_SID -1
 #define END_SID -2
